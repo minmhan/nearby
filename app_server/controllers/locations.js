@@ -1,4 +1,12 @@
-module.exports.homelist = function(req, res){
+var request = require('request');
+var apiOptions = {
+    server: "http://localhost:3000"
+};
+if(process.env.NODE_ENV === 'production'){
+    apiOptions.server = "http://nearbywifi.herokuapp.com"
+}
+
+var renderHomeList = function(req, res, responseBody){
     res.render('locations-list', { 
         title: 'Near By - find the place to work with wifi',
         pageHeader: {
@@ -8,25 +16,25 @@ module.exports.homelist = function(req, res){
         sidebar:"Looking for wifi and a seat? Loc8r helps you find places \
             to work when out and about. Perhaps with coffee, cake or a pint? \
             Let Loc8r help you find the place you're looking for.",
-        locations:[{
-            name: 'Star Cups',
-            address: 'Blk 305, And Mo Kio Singapore',
-            rating: 3,
-            facilities: ['Hot Drink', 'Food', 'Premium Coffee'],
-            distance: '100m'
-        },{
-            name: 'Cafe Hero',
-            address: 'Bo Aung Kyaw Street, Yangon, Myanmar',
-            rating: 4,
-            facilities: ['Hot drinks', 'Food', 'Premium wifi'],
-            distance: '200m'
-        },{
-            name: 'Gold Coffee',
-            address: 'Sanchaung Garden, Yangon',
-            rating:2,
-            facilities:['Hot Drink', 'Food', 'Premium Wifi'],
-            distance:'230m'
-        }]
+        locations: responseBody
+    });
+};
+
+module.exports.homelist = function(req, res){
+    var requestOptions, path;
+    path = '/api/locations';
+    requestOptions = {
+        url: apiOptions.server + path,
+        method: "GET",
+        json: {},
+        qs: {
+            lng: 0.9690885,
+            lat: 51.455043,
+            maxDistance: 20
+        }
+    };
+    request(requestOptions, function(err, response, body){
+        renderHomeList(req, res, body);
     });
 };
 

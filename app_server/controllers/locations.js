@@ -3,7 +3,7 @@ var apiOptions = {
     server: "http://localhost:3000"
 };
 if(process.env.NODE_ENV === 'production'){
-    apiOptions.server = "http://nearbywifi.herokuapp.com"
+    apiOptions.server = "http://wifinearme.herokuapp.com"
 }
 
 var renderHomeList = function(req, res, responseBody){

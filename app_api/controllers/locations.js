@@ -70,7 +70,7 @@ module.exports.locationsListByDistance = function(req, res){
     };
     var geoOptions = {
         spherical: true,
-        maxDistance: 0.2229, //theEarth.getRadsFromDistance(300),
+        maxDistance: 20, //theEarth.getRadsFromDistance(300),
         distanceMultiplier: 1,
         distanceField: "dist.calculated",
         num:10
@@ -118,5 +118,20 @@ module.exports.locationsReadOne = function(req, res){
 };
 module.exports.locationsUpdateOne = function(req, res){};
 module.exports.locationsCreateOne = function(req, res) {};
-module.exports.locationsDeleteOne = function(req, res) {};
+module.exports.locationsDeleteOne = function(req, res) {
+    var locationid = req.params.locationid;
+    if(locationid){
+        Loc.findByIdAndRemove(locationid).exec(function(err, location){
+            if(err){
+                sendJsonResponse(res, 404, err);
+                return;
+            }
+            sendJsonResponse(res, 204, null);
+        });
+    }else{
+        sendJsonResponse(res, 404, {
+            "message":"no locationid"
+        });
+    }
+};
 

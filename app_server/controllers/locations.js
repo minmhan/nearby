@@ -38,8 +38,8 @@ module.exports.homelist = function(req, res){
         method: "GET",
         json: {},
         qs: {
-            lng: -0.969088,
-            lat: 52.455043,
+            lng: 103.838501,
+            lat: 1.301136,
             maxDistance: 800000
         }
     };
@@ -67,7 +67,7 @@ var _formatDistance = function(distance){
     return numDistance + unit;
 };
 
-module.exports.locationInfo = function(req, res){
+var getLocationInfo = function(req, res, callback){
     var requestOptions, path;
     path = "/api/locations/" + req.params.locationid;
     requestOptions = {
@@ -77,11 +77,37 @@ module.exports.locationInfo = function(req, res){
     };
     request(requestOptions, function(err, response, body){
         var data = body;
-        data.coords = {
-            lng: body.coords[0],
-            lat: body.coords[1]
-        };
-        renderDetailPage(req,res, data);
+        if(response.statusCode === 200){
+            data.coords = {
+                lng: body.coords[0],
+                lat: body.coords[1]
+            };
+            callback(req,res, data);
+        }else{
+            _showError(req, res, response.statusCode);
+        }
+    });
+}
+
+module.exports.locationInfo = function(req, res){
+    getLocationInfo(req, res, function(req, res, responseData){
+        renderDetailPage(req, res, responseData);
+    });
+};
+
+var _showError = function(req, res, status){
+    var title, content;
+    if (status === 404){
+        title = '404, page not found';
+        content = "Oh dear, Look like we cann\'t find this page. Sorry";
+    }else{
+        title = status + ', something gone wrong.';
+        content = "Something, somewhere, has gone wrong.";
+    }
+    res.status(status);
+    res.render('generic-text', {
+        title: title,
+        content:content
     });
 };
 
@@ -102,10 +128,44 @@ renderDetailPage = function(req, res, locDetail){
     });
 };
 
+renderReviewForm = function(req, res, locDetail){
+    res.render('location-review-form', {
+        title: 'Review ' + locDetail.name + ' on Wifi Near Me',
+        pageHeader: { title: 'Review ' + locDetail.name },
+        error: req.query.err
+    })
+};
+
 module.exports.addReview = function(req, res){
-    res.render('location-review-form', { title: 'Add Review'});
+    getLocationInfo(req, res, function(req, res, responseData){
+        renderReviewForm(req, res, responseData);
+    });
 };
 
 module.exports.doAddReview = function(req, res){
-    
+    var requestOptions, path, locationid, postdata;
+    locationid = req.params.locationid;
+    path = "/api/locations/" + locationid  + "/reviews";
+    postdata = {
+        author: req.body.name,
+        rating: parseInt(req.body.rating, 10),
+        reviewText: req.body.review
+    };
+
+    requestOptions = {
+        url: apiOptions.server + path,
+        method: "POST",
+        json: postdata
+    };
+    request(requestOptions, function(err, response, body){
+        if(response.statusCode === 201){
+            res.redirect('/location/'+ locationid);
+        }else if(response.statusCode === 400 && body.name && body.name === 'ValidationError'){
+            res.redirect('/location/' + locationid + '/reviews/new?err=val');
+        }
+        else{
+            console.log(body);
+            _showError(req, res, response.statusCode);
+        }
+    });
 }

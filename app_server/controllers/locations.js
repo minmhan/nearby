@@ -6,16 +6,7 @@ if(process.env.NODE_ENV === 'production'){
     apiOptions.server = "http://wifinearme.herokuapp.com"
 }
 
-var renderHomeList = function(req, res, responseBody){
-    var message;
-    if(!(responseBody instanceof Array)){
-        message = "API lookup error";
-        responseBody = [];
-    }else{
-        if(!responseBody.length){
-            message = "No places found nearby."
-        }
-    }
+var renderHomeList = function(req, res){
     res.render('locations-list', { 
         title: 'Wifi Near Me - find the place to work with wifi',
         pageHeader: {
@@ -24,35 +15,12 @@ var renderHomeList = function(req, res, responseBody){
         },
         sidebar:"Looking for wifi and a seat? Wifi Near Me helps you find places \
             to work when out and about. Perhaps with coffee, cake or a pint? \
-            Let Wifi Near Me help you find the place you're looking for.",
-        locations: responseBody,
-        message: message
+            Let Wifi Near Me help you find the place you're looking for."
     });
 };
 
 module.exports.homelist = function(req, res){
-    var requestOptions, path;
-    path = '/api/locations';
-    requestOptions = {
-        url: apiOptions.server + path,
-        method: "GET",
-        json: {},
-        qs: {
-            lng: 103.838501,
-            lat: 1.301136,
-            maxDistance: 800000
-        }
-    };
-    request(requestOptions, function(err, response, body){
-        var i, data;
-        data = body;
-        if(response.statusCode === 200 && data.length){
-            for(i=0; i < data.length; i++){
-                data[i].distance = _formatDistance(data[i].distance);
-            }
-        }
-        renderHomeList(req, res, body);
-    });
+    renderHomeList(req, res);
 };
 
 var _formatDistance = function(distance){

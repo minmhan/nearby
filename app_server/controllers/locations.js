@@ -137,3 +137,19 @@ module.exports.doAddReview = function(req, res){
         }
     });
 }
+
+module.exports.addLocation = function(req, res){
+    renderLocationForm(req, res);
+}
+renderLocationForm = function(req, res){
+    console.log('add location');
+    res.render('location-form', {
+        title: 'New location',
+        pageHeader: { title: 'New location' },
+        error: req.query.err
+    });
+};
+
+module.exports.doAddLocation = function(req, res){
+    res.render('location-form', {});
+}

@@ -20,7 +20,8 @@ html(ng-app='nearme')
               a(href='/about/') About
 
     .container
-      block content
+      div(ng-view)
+        block content
 
       footer
        .row
@@ -28,7 +29,14 @@ html(ng-app='nearme')
             small &copy; Near By 2016
     
     script(src='/angular/angular.min.js')
-    script(src='/angular/nearme.js')
+    script(src='/angular/angular-route.min.js')
+    script(src='/angular/nearme.min.js')
+    //script(src='/app.js')
+    //script(src='/home/home.controller.js')
+    //script(src='/common/services/nearmeData.service.js')
+    //script(src='/common/services/geolocation.service.js')
+    //script(src='/common/filters/formatDistance.filter.js')
+    //script(src='/common/directives/ratingStars/ratingStars.directive.js')
     script(src='/javascripts/jquery-3.1.1.min.js')
     script(src='/bootstrap/js/bootstrap.min.js')
     script(src='/javascripts/validation.js')

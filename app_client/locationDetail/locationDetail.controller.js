@@ -1,10 +1,12 @@
 (function(){
     angular.module('nearme').controller('locationDetailCtrl', locationDetailCtrl);
 
-    locationDetailCtrl.$inject = ['$routeParams','$uibModal', 'nearmeData'];
-    function locationDetailCtrl($routeParams,$uibModal, nearmeData){
+    locationDetailCtrl.$inject = ['$routeParams','$location', '$uibModal', 'nearmeData', 'authentication'];
+    function locationDetailCtrl($routeParams,$location, $uibModal, nearmeData, authentication){
         var vm = this;
         vm.locationid = $routeParams.locationid;
+        vm.isLoggedIn = authentication.isLoggedIn();
+        vm.currentPath = $location.path();
         nearmeData.locationById(vm.locationid)
             .then(
                 function successCallback(data){
@@ -32,10 +34,8 @@
             });
             
             modalInstance.result.then(function(data){
-                console.log(data);
                 vm.data.location.reviews.push(data);
             });
         };
-
     }
 })();

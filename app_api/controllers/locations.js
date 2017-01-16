@@ -33,7 +33,6 @@ var sendJsonResponse = function(res,status,content){
 }
 
 module.exports.locationsCreate = function(req,res){
-    //sendJsonResponse(res,200, {'status':'success'});
     Loc.create({
         name: req.body.name,
         address: req.body.address,
@@ -61,16 +60,18 @@ module.exports.locationsCreate = function(req,res){
     });
 };
 
+//TODO: Fix distance function
 module.exports.locationsListByDistance = function(req, res){
     var lng = parseFloat(req.query.lng);
     var lat = parseFloat(req.query.lat);
+    var maxDistance = parseFloat(req.query.maxDistance);
     var point = {
         type:"Point",
         coordinates:[lng,lat]
     };
     var geoOptions = {
         spherical: true,
-        maxDistance: 20, //theEarth.getRadsFromDistance(300),
+        maxDistance: maxDistance, //theEarth.getRadsFromDistance(300),
         distanceMultiplier: 1,
         distanceField: "dist.calculated",
         num:10
@@ -84,7 +85,6 @@ module.exports.locationsListByDistance = function(req, res){
         }
         else{
             results.forEach(function(doc){
-                console.log('found......');
                 location.push({
                     distance:doc.dis, //theEarth.getDistanceFromRads(doc.dis),
                     name: doc.obj.name,

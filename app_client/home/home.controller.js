@@ -13,8 +13,8 @@
                     and about. Perhaps with coffee, cake or pint? \
                     Near Me help you find the place you are looking for."
         };
-        vm.message = 'checking your location';
-
+        vm.message = 'Checking your location...';
+        vm.loading = true;
         vm.getData = function(position){
             var lat = position.coords.latitude;
             var lng = position.coords.longitude;
@@ -23,11 +23,12 @@
             .then(
                 function(result){ 
                     vm.message = result.data.length > 0 ? '' : 'no location found';
-                    vm.data = { locations: result.data}; 
-                    //console.log(result.data);
+                    vm.data = { locations: result.data }; 
+                    vm.loading = false;
                 }, 
             function(e){ 
                 vm.message = "sorry, something is gone wrong";
+                vm.loading = false;
             });
         };
 

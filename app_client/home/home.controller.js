@@ -1,8 +1,8 @@
 (function(){
     angular.module('nearme').controller('homeCtrl', homeCtrl);
 
-    homeCtrl.$inject = ['$scope', 'nearmeData', 'geolocation'];
-    function homeCtrl($scope, nearmeData, geolocation){
+    homeCtrl.$inject = ['$scope', '$uibModal', 'nearmeData', 'geolocation'];
+    function homeCtrl($scope, $uibModal, nearmeData, geolocation){
         var vm = this;
         vm.pageHeader = {
             title:'wifi near me',
@@ -41,6 +41,25 @@
         vm.noGeo = function(){
             $scope.$apply(function(){
                 vm.message = 'geo location not supported by this browser';
+            });
+        }
+
+        vm.popupNewLocForm = function(){
+            var modalInstance = $uibModal.open({
+            templateUrl: '/locationNewModal/locNewModal.view.html',
+                controller: 'locNewModalCtrl as vm',
+                resolve: {
+                    locationData: function(){
+                        return {
+                            //locationid: vm.locationid,
+                            //locationName: vm.data.location.name
+                        };
+                    }
+                }
+            });
+            
+            modalInstance.result.then(function(data){
+                //vm.data.location.reviews.push(data);
             });
         }
 
